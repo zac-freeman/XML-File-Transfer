@@ -41,6 +41,11 @@ public class Client {
 
 		// creates a FileMessage from each file and marshals it to ClientHandler over socket
 		for (File file : files) {
+			if (file.isDirectory()) {
+				System.out.println("Nested directory '" + file.getName() + "' ignored.");
+				continue;
+			}
+
 			try (
 				Socket socket = new Socket(this.ip, this.port);
 				InputStream in = new FileInputStream(file.getPath());
@@ -49,6 +54,7 @@ public class Client {
 				JAXBContext context = JAXBContext.newInstance(FileMessage.class);
 				Marshaller marshaller = createMarshaller(context);
 
+				// creates formatted date string
 				Calendar date = Calendar.getInstance();
 				String dateText = date.get(1) + "-" + String.format("%02d", date.get(2)) + "-" + String.format("%02d", date.get(5));
 
