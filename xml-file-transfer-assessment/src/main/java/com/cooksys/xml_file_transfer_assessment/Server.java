@@ -6,15 +6,14 @@ import java.net.ServerSocket;
 public class Server {
 
 	private int port;
-	private String rootName;	//name of root directory of folders to write into
+	private String rootName;	// name of root directory of folders to write into
 
-	//TODO: comments
 	public Server(int port, String rootName) {
 		this.port = port;
 		this.rootName = rootName;
 
-		try ( ServerSocket server = new ServerSocket(this.port); )
-		{
+		// accepts sockets and passes them onto ClientHandler threads
+		try ( ServerSocket server = new ServerSocket(this.port); ) {
 			while (true) {
 				ClientHandler client = new ClientHandler(server.accept(), this.rootName);
 				new Thread(client).start();

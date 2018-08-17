@@ -11,7 +11,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-//TODO: comments
 public class ClientHandler implements Runnable {
 	private Socket socket;
 	private String rootName;
@@ -22,11 +21,12 @@ public class ClientHandler implements Runnable {
 	}
 
 	public void run() {
-		try ( InputStream in = this.socket.getInputStream(); )
-		{
+		// unmarshalls FileMessage from InputStream and writes it to given directory
+		try ( InputStream in = this.socket.getInputStream(); ) {
 			JAXBContext context = JAXBContext.newInstance(FileMessage.class);
 			Unmarshaller unmarshaller = createUnmarshaller(context);
 
+			// creates file path (if needed) and empty file with the given file name
 			FileMessage message = (FileMessage) unmarshaller.unmarshal(in);
 			String filePath = rootName + "/" + message.getUsername() + "/" + message.getDate() + "/";
 			File file = new File(filePath);
@@ -37,11 +37,10 @@ public class ClientHandler implements Runnable {
 			file = new File(filePath);
 			file.createNewFile();
 
-			try ( OutputStream out = new FileOutputStream(filePath); )
-			{
+			// writes file contents to new file
+			try ( OutputStream out = new FileOutputStream(filePath); ) {
 				out.write(message.getContents());
 			}
-
 		} catch (IOException e) {
 			System.out.println("Error getting InputStream from Socket:");
 			e.printStackTrace();
@@ -51,6 +50,7 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
+	// creates Unmarshaller from JAXBContext
 	public static Unmarshaller createUnmarshaller (JAXBContext context) {
 		try {
 			return context.createUnmarshaller();

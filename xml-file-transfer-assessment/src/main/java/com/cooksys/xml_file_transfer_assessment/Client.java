@@ -22,13 +22,13 @@ public class Client {
 	private String targetName;	//name of target file or directory to read from
 	private String username;
 
-	//TODO: comments
 	public Client(String ip, int port, String username, String targetName) {
 		this.ip = ip;
 		this.port = port;
-		this.username = username;
 		this.targetName = targetName;
+		this.username = username;
 
+		// creates a list of files to iterate over
 		File target = new File(this.targetName);
 		File[] files = new File[0];
 		if (target.isDirectory()) {
@@ -39,6 +39,7 @@ public class Client {
 			System.out.println("File or directory '" + this.targetName + "' not found.");
 		}
 
+		// creates a FileMessage from each file and marshals it to ClientHandler over socket
 		for (File file : files) {
 			try (
 				Socket socket = new Socket(this.ip, this.port);
@@ -48,8 +49,9 @@ public class Client {
 				JAXBContext context = JAXBContext.newInstance(FileMessage.class);
 				Marshaller marshaller = createMarshaller(context);
 
-		    	Calendar date = Calendar.getInstance();
+				Calendar date = Calendar.getInstance();
 				String dateText = date.get(1) + "-" + String.format("%02d", date.get(2)) + "-" + String.format("%02d", date.get(5));
+
 				byte[] contents = new byte[in.available()];
 				in.read(contents);
 
@@ -69,6 +71,7 @@ public class Client {
 		}
 	}
 
+	// creates Marshaller object from JAXBContext
 	public static Marshaller createMarshaller (JAXBContext context) {
 		try {
 			return context.createMarshaller();
