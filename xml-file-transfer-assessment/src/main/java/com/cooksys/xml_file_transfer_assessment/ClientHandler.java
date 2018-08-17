@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+//TODO: comments
 public class ClientHandler implements Runnable {
 	private Socket socket;
 	private String rootName;
@@ -47,11 +48,6 @@ public class ClientHandler implements Runnable {
 		} catch (JAXBException e) {
 			System.out.println("Error creating JAXBContext, or Unmarshaller:");
 			e.printStackTrace();
-		}
-
-
-		{
-			
 		}
 	}
 

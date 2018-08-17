@@ -9,47 +9,51 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Calendar;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 public class Client {
 
 	private String ip;
 	private int port;
 	private String targetName;	//name of target file or directory to read from
-	private String username = "test_user";	//TODO: best practices way to get username
+	private String username;
 
-	public Client(String ip, int port, String targetName) {
+	//TODO: comments
+	public Client(String ip, int port, String username, String targetName) {
 		this.ip = ip;
 		this.port = port;
+		this.username = username;
 		this.targetName = targetName;
 
 		File target = new File(this.targetName);
-		File[] files;
+		File[] files = new File[0];
 		if (target.isDirectory()) {
 			files = target.listFiles();
-		} else {
+		} else if (target.isFile()) {
 			files = new File[] {target};
+		} else {
+			System.out.println("File or directory '" + this.targetName + "' not found.");
 		}
 
 		for (File file : files) {
 			try (
 				Socket socket = new Socket(this.ip, this.port);
-				InputStream in = new FileInputStream(file.getPath());	//TODO: appropriate getPath()
+				InputStream in = new FileInputStream(file.getPath());
 				OutputStream out = new BufferedOutputStream(new DataOutputStream(socket.getOutputStream()));
 			) {
 				JAXBContext context = JAXBContext.newInstance(FileMessage.class);
 				Marshaller marshaller = createMarshaller(context);
-				StringBuffer buffer = new StringBuffer();
 
-				String date = "2018-08-17";	//TODO: find date
+		    	Calendar date = Calendar.getInstance();
+				String dateText = date.get(1) + "-" + String.format("%02d", date.get(2)) + "-" + String.format("%02d", date.get(5));
 				byte[] contents = new byte[in.available()];
 				in.read(contents);
 
-				FileMessage message = new FileMessage(username, date, file.getName(), contents);
+				FileMessage message = new FileMessage(this.username, dateText, file.getName(), contents);
 				marshaller.marshal(message, out);
 
 			} catch (UnknownHostException e) {

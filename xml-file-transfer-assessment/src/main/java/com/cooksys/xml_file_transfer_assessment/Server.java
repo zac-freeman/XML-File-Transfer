@@ -6,8 +6,9 @@ import java.net.ServerSocket;
 public class Server {
 
 	private int port;
-	private String rootName;	//name of root directory where folders are to be written
+	private String rootName;	//name of root directory of folders to write into
 
+	//TODO: comments
 	public Server(int port, String rootName) {
 		this.port = port;
 		this.rootName = rootName;
