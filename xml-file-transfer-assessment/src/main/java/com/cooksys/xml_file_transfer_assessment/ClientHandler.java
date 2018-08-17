@@ -25,11 +25,15 @@ public class ClientHandler implements Runnable {
 		{
 			JAXBContext context = JAXBContext.newInstance(FileMessage.class);
 			Unmarshaller unmarshaller = createUnmarshaller(context);
+
 			FileMessage message = (FileMessage) unmarshaller.unmarshal(in);
 			String filePath = rootName + "/" + message.getUsername() + "/" + message.getDate() + "/";
-			System.out.println(filePath);
 			File file = new File(filePath);
+			if (!file.exists()) {
+				file.mkdirs();
+			}
 			filePath = filePath + message.getFilename();
+			file = new File(filePath);
 			file.createNewFile();
 
 			try ( OutputStream out = new FileOutputStream(filePath); )
